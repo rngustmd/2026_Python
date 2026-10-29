@@ -39,49 +39,103 @@ df = pd.DataFrame(common_data)
 # 선 1: '월이용금액', 라벨 '월이용금액'
 # 선 2: '만족도점수', 라벨 '만족도점수'
 # - 조건: 두 지표의 흐름을 비교할 수 있도록 범례(legend)를 표시하고 제목을 '상위 10명 고객 지표 추이'로 설정하시오.
+top10 = df.head(10)
+plt.figure( figsize=( 7 , 4 ) )
+plt.plot( top10.index , top10['월이용금액'] , label = '월이용금액' , color = 'blue', linestyle = "-" , marker='o' )
+plt.plot( top10.index , top10['만족도점수'] , label='만족도점수' , color='red', linestyle = "--" , marker='s')
+plt.title( '상위 10명 고객 지표 추이' )
+plt.xlabel( '고객인덱스' )
+plt.ylabel( '값' )
+plt.grid( True )
+plt.legend()
+plt.show()
 
 # 문제 2: 범주별 빈도 막대그래프
 # 공통 데이터프레임(df)의 '주요결제수단'별 결제 건수(빈도수)를 막대그래프로 시각화하시오.
 # x축: 결제수단 종류 (df['주요결제수단'].value_counts().index)
 # y축: 결제수단별 빈도수 (df['주요결제수단'].value_counts().values)
 # - 조건: x축에 결제수단, y축에 건수를 매핑하여 결제수단 간 규모를 비교하고 축 레이블과 제목을 설정하시오.
+payments = df['주요결제수단'].value_counts()
+bars = plt.bar( payments.index , payments.values , width=0.5 , 
+               color=["#8B5FBD" , "#7C376B" , "#B15B60"] )
+plt.bar_label( bars , padding=3 , fontsize=8 )
+plt.title( '주요결제수단별 결제 건수')
+plt.xlabel("결제수단")
+plt.ylabel("결제 건수")
+plt.grid( True , alpha=0.5 )
+plt.show( )
 
 # 문제 3: 연속형 변수 간 관계 분석 산점도
 # 공통 데이터프레임(df)의 '연령'과 '월이용금액' 두 수치형 변수 간의 관계를 산점도로 시각화하시오.
 # - 데이터: x축 '연령', y축 '월이용금액'
 # - 조건: 두 변수 간의 상관성 및 분포 패턴을 확인할 수 있도록 각각 x축과 y축에 매핑하고 제목을 설정하시오.
+plt.scatter( df['연령'] , df['월이용금액'] , color = "purple" , s = 80 , alpha=0.8 )
+plt.title( "연령과 월이용금액 관계" )
+plt.xlabel( "연령" )
+plt.ylabel( "월이용금액" )
+plt.show() 
 
 # 문제 4: 연속형 수치 데이터 분포 분석
 # 공통 데이터프레임(df)의 '만족도점수' 데이터를 활용하여 구간별 빈도 분포를 히스토그램으로 나타내시오.
 # - 데이터: '만족도점수'
 # - 조건: 구간(bins) 수를 10개로 설정하여 점수 구간별 데이터의 밀집도와 왜도를 확인하시오.
+# 1) 히스토그램
+plt.hist( df['만족도점수'] , bins=10 , edgecolor="black" )
+plt.title( "만족도점수 분포도")
+plt.xlabel( "만족도점수" )
+plt.ylabel( "빈도/분포 수")
+plt.show()
 
 # 문제 5: 단일 변수 5수치 요약 및 이상치 탐색 
 # 공통 데이터프레임(df)의 '월이용금액' 데이터를 활용하여 중심 위치와 사분위수 범위를 박스플롯으로 시각화하시오.
 # - 데이터: '월이용금액'
-# - 조건: 데이터의 중앙값, 사분위수(Q1, Q3), 정상 범위 및 이상치(Outlier)가 드러나도록 박스플롯을 생성하시오.
+# - 조건: 데이터의 중앙값, 사분위수(Q1, Q3), 정상 범위 및 이상치(Outliner)가 드러나도록 박스플롯을 생성하시오.
+plt.boxplot( df['월이용금액'] , vert=True , patch_artist=True )
+plt.title( '월이용금액(Outliner) 탐지용 Boxplot' )
+plt.ylabel("월이용금액")
+plt.grid( axis='y' , linestyle=':' , alpha=0.6)
+plt.show()
+
 
 # 문제 6: 범주형 데이터 빈도 집계 
 # Seaborn을 활용하여 회원등급별 인원수와 각 등급 내 재구매 여부 분포를 카운트플롯으로 시각화하시오.
 # - 데이터: 공통 데이터프레임(df)
 # - 조건: x축에 '회원등급'을 배치하고, '재구매여부' 컬럼을 세부 구분 그룹(hue)으로 매핑하여 집계하시오.
+sns.countplot( data=df , x="회원등급" , hue="재구매여부" , palette="Set1")
+plt.title('회원등급별 재구매 여부')
+plt.legend( title="재구매여부"  ) 
+plt.show()
 
 # 문제 7: 범주별 수치 분포 비교 
 # Seaborn을 활용하여 주요 결제수단 그룹에 따른 월이용금액의 분포 차이를 박스플롯으로 비교하시오.
 # - 데이터: 공통 데이터프레임(df)
 # - 조건: x축에 '주요결제수단', y축에 '월이용금액'을 매핑하여 결제수단별 금액 수준과 분산 정도를 한 화면에서 비교하시오.
+sns.boxplot( data=df , x="주요결제수단" , y="월이용금액", hue="주요결제수단" , palette="Pastel2" )
+plt.title("결제수단별 월이용금액 분포")
+plt.show()
 
 # 문제 8: 다변량 상관계수 행렬 시각화
 # Seaborn을 활용하여 공통 데이터프레임(df) 내 연속형 수치 변수 간의 선형 관계 강도를 히트맵으로 나타내시오.
 # - 데이터: df의 '연령', '월이용금액', '구매건수', '만족도점수' 컬럼 피어슨 상관계수 행렬(.corr())
 # - 조건: 각 셀에 계산된 상관계수 수치를 표시(annot=True)하여 변수 간 상관성의 방향과 크기를 직관적으로 파악할 수 있게 하시오.
+numeric_df = df[ [ '연령', '월이용금액', '구매건수', '만족도점수' ] ]
+corr_matrix = numeric_df.corr()
+sns.heatmap( corr_matrix , cmap="coolwarm" , fmt='.2f' , annot=True )
+plt.title("상관관계 히트맵")
+plt.show()
 
 # 문제 9: 그룹 구분을 포함한 다변량 산점도
 # Seaborn을 활용하여 구매건수와 만족도점수의 관계를 회원등급별로 세분화하여 시각화하시오.
 # - 데이터: 공통 데이터프레임(df)
 # - 조건: x축에 '구매건수', y축에 '만족도점수'를 매핑하고, 점의 그룹 구분 기준(hue)으로 '회원등급'을 적용하시오.
+sns.scatterplot( data=df , x='구매건수' , y='만족도점수' , hue='회원등급' , s=80 , alpha=0.9 , palette='Pastel1' )
+plt.title( "회원등급별 구매건수 vs 만족도점수" )
+plt.show()
 
 # 문제 10: 다변량 상호 분포 탐색 그리드
 # Seaborn을 활용하여 공통 데이터프레임(df) 주요 수치형 변수 쌍 간의 일대일 관계와 개별 분포를 한 번에 조망할 수 있는 페어플롯을 생성하시오.
 # - 데이터: df의 '연령', '월이용금액', '만족도점수', '재구매여부' 컬럼
 # - 조건: '재구매여부'를 그룹 구분 기준(hue)으로 설정하여 변수 쌍 간의 산점도와 각 변수별 분포 형태를 동시에 확인하시오.
+n_df = df[ [ '연령', '월이용금액', '만족도점수', '재구매여부' ] ]
+sns.pairplot( data=n_df , hue='재구매여부' , palette='Set1' )
+plt.show()
