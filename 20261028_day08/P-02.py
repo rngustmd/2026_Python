@@ -81,3 +81,4 @@ print( new_df ) # 부서별 인원수/평균나이/최고령나이
 # 예] 개발부 = 0 , 정보보호부 = 1 , 기술부 = 0
 new_df = pd.get_dummies( df , columns=['부서'] , dtype=int )
 print( new_df )
+
