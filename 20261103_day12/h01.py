@@ -9,7 +9,7 @@ import pandas as pd
 import xmltodict
 
 # 0] 
-service_key = ""
+service_key = "ae3ef9800f628783781804c737f4e98abb3bd5c189f5a9500df88acae4789c0d"
 
 # 1] 공공데이터포털 json 형식의 자료 요청
 def test1() : 
