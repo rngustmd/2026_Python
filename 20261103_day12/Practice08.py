@@ -10,7 +10,7 @@ import seaborn as sns
 # API 이름: 행정안전부_착한가격업소 현황
 # API URL: https://www.data.go.kr/data/3045247/fileData.do 
 
-service_key = "ae3ef9800f628783781804c737f4e98abb3bd5c189f5a9500df88acae4789c0d"
+service_key = ""
 
 # 목표: httpx를 통해 공공데이터 API를 호출하고, pandas를 활용해 업소명, 주소, 가격 데이터를 구조화한 뒤 통계 분석을 수행합니다.
 # 2. 상세 요구사항
@@ -57,3 +57,4 @@ plt.title( "업종별 평균 가격" )
 plt.xlabel( "업종" )
 plt.ylabel( "평균 가격 (원)" )
 plt.show()
+
