@@ -6,13 +6,13 @@
 
 import httpx
 import pandas as pd
+import xmltodict
 
 # 0] 
-service_key = "ae3ef9800f628783781804c737f4e98abb3bd5c189f5a9500df88acae4789c0d"
+service_key = ""
 
 # 1] 공공데이터포털 json 형식의 자료 요청
 def test1() : 
-    # https://api.odcloud.kr/api/15052602/v1/uddi:855807e2-fe8a-4e47-8a5a-ce1894e410d7_201909031553?page=1&perPage=10&serviceKey=ae3ef9800f628783781804c737f4e98abb3bd5c189f5a9500df88acae4789c0d
     # 2] 신청한 API 의 주소 및 파라미터 분석 , page 현재페이지 , perPage=페이지당자료수 , serviceKey
     url = "https://api.odcloud.kr/api/15052602/v1/uddi:855807e2-fe8a-4e47-8a5a-ce1894e410d7_201909031553"
     url += "?page=1"
@@ -31,5 +31,24 @@ def test1() :
     # 5] 판다스에 저장하기 , import pandas as pd
     df = pd.DataFrame( response_json['data'] ) # { "currentCount" : 10 , "data" : [실질자료] }
     df.info() # 확인
-
 test1()
+
+# 2]
+def test2( ) : 
+    # 1] 요청할 API 주소 
+    url = "https://apis.data.go.kr/B552657/ErmctInsttInfoInqireService/getParmacyFullDown"
+    url += f"?serviceKey={service_key}"
+    url += "&pageNo=1&numOfRows=100"
+
+    # 2] httpx 이용한 api 모형
+    response = httpx.get( url )
+
+    # 3] 요청 응답 자료를 문자열로 변환하여 파이썬 dict 형식으로 변환
+    response_dict = xmltodict.parse(response.text)
+    print( response_dict )
+
+    # 4] <response> -> <body> -> <items> -> <item>
+    df = pd.DataFrame( response_dict['response']['body']['items']['item'] )
+    df.info()
+
+test2()
