@@ -45,7 +45,6 @@ print( "rmse: ", rmse )
 #  2. 식사비 $5부터 $100까지 모델이 예측한 선형 회귀선
 #  3. 식사비 $50일 때의 모델 예측 지점 (붉은 점으로 강조)
 import matplotlib.pyplot as plt
-plt.scatter( X_train , Y_train )
 plt.scatter( X_test , Y_test ) 
 plt.scatter( [50] , model.predict( [[50]] ) , color="red" )
 plt.plot( [5,100] , model.predict( [ [5] , [100] ] ) ) 
