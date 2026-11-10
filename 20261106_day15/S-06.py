@@ -2,7 +2,7 @@
 import pandas as pd
 df = pd.read_csv( './20261106_day15/Fish.csv' )
 
-# 1) 이진 븐루 실습하기 위한 정답지 2개 사용
+# 1) 이진 분리 실습하기 위한 정답지 2개 사용
 df = df[ (df[ 'Species' ] == 'Bream') | (df[ 'Species' ] == 'Smelt') ]
 X = df[ [ 'Weight','Length1','Length2','Length3','Height','Width' ] ]
 Y = df[ 'Species' ] # Bream 또는 Smelt
