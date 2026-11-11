@@ -38,10 +38,13 @@ print( model.classes_ ) # 정답지 경우의 수 , 타깃의 클래스/값
 # 1) 정확도 : 전체 예측 건수 중 맞힌 정답의 비율
 # 클래스 내 계수들이 불균형이면 실제로 맞힌 비율
 print( accuracy_score( Y_test , Y_pred ) )
+
 # 2) 정밀도 : 예측한 것 중 실제로 맞힌 비율
 print( precision_score( Y_test , Y_pred , average="macro" ) )
+
 # 3) 재현율 : 실제 정답인 것 중에 모델이 놓치지 않고 찾아낸 비율
 print( recall_score( Y_test , Y_pred , average="macro" ) )
+
 # 4) f1점수/표준 : 정밀도와 재현율 간의 조화 조정하기 위한 조화평균
 print( f1_score( Y_test , Y_pred , average="macro" ) )
 
@@ -49,8 +52,31 @@ print( f1_score( Y_test , Y_pred , average="macro" ) )
 from sklearn.metrics import ConfusionMatrixDisplay , classification_report
 # ConfusionMatrixDisplay.from_predictions( 정답지 , 예측값 )
 ConfusionMatrixDisplay.from_predictions( Y_test , Y_pred )
-
 plt.show()
 
 # 리포트 
 print( classification_report( Y_test , Y_pred ) )
+
+# 파이프라인 구성
+from sklearn.pipeline import Pipeline
+pipe = Pipeline( [
+    ('caler' , StandardScaler()) ,
+    ('model' , LogisticRegression( max_iter=1000, random_state=42) )
+] )
+
+# 하이퍼 파라미터 후보군 , 식별자__매개변수명 : [ 후보값 , 후보값 ]
+param_grid = { "model__C" : [0.01 , 0.1 , 1.0 , 10.0 , 100.0] }
+
+# K폴드 이용한 교차 검증 분할기( 표준 : KFold , 다중분류 )
+from sklearn.model_selection import KFold , StratifiedKFold
+cv = StratifiedKFold( n_splits=5 , shuffle=True , random_state=42 )
+
+# 그리드서치
+from sklearn.model_selection import GridSearchCV
+grid = GridSearchCV( pipe , param_grid , cv=cv , scoring='f1_macro' , n_jobs=-1 )
+grid.fit(X_train , Y_train)
+print( grid.best_params_ )
+print( grid.best_score_ )
+best_model = grid.best_estimator_
+final_pred = best_model.predict(X_test)
+print( classification_report( Y_test , final_pred) )
