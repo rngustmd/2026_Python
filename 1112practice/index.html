@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영등포구 아파트 실거래가 예측</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- axios (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+</head>
+<body>
+
+  <!-- 상단 -->
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <span class="brand-mark">YDP</span>
+        <div>
+          <h1>영등포구 아파트 실거래가 예측</h1>
+          <p>서울시 부동산 실거래가 9,079건 · Ridge 다항 회귀 (Pipeline + GridSearchCV)</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- 입력 폼 -->
+    <section class="panel">
+      <h2 class="panel-title"><span class="step">1</span>아파트 정보 입력</h2>
+
+      <form id="predictForm">
+        <label for="dong">법정동</label>
+        <select id="dong">
+          <optgroup label="신길 · 대림 · 도림">
+            <option>신길동</option><option>대림동</option><option>도림동</option>
+          </optgroup>
+          <optgroup label="여의도">
+            <option selected>여의도동</option>
+          </optgroup>
+          <optgroup label="당산">
+            <option>당산동</option><option>당산동1가</option><option>당산동2가</option><option>당산동3가</option>
+            <option>당산동4가</option><option>당산동5가</option><option>당산동6가</option>
+          </optgroup>
+          <optgroup label="문래">
+            <option>문래동2가</option><option>문래동3가</option><option>문래동4가</option>
+            <option>문래동5가</option><option>문래동6가</option>
+          </optgroup>
+          <optgroup label="양평">
+            <option>양평동1가</option><option>양평동2가</option><option>양평동3가</option>
+            <option>양평동4가</option><option>양평동5가</option><option>양평동6가</option>
+          </optgroup>
+          <optgroup label="영등포">
+            <option>영등포동</option><option>영등포동1가</option><option>영등포동2가</option><option>영등포동3가</option>
+            <option>영등포동4가</option><option>영등포동5가</option><option>영등포동7가</option><option>영등포동8가</option>
+          </optgroup>
+        </select>
+
+        <label for="area">전용면적 <span class="hint" id="pyeongHint">약 25.7평</span></label>
+        <div class="input-unit">
+          <input id="area" type="number" step="0.01" min="10" max="245" value="84.9" required>
+          <span>㎡</span>
+        </div>
+        <p class="range" id="areaRange"></p>
+        <div class="chips">
+          <button type="button" class="chip" data-area="59.9">59㎡ (18평)</button>
+          <button type="button" class="chip active" data-area="84.9">84㎡ (25평)</button>
+          <button type="button" class="chip" data-area="114.9">114㎡ (34평)</button>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="floor">층</label>
+            <div class="input-unit">
+              <select id="floor"></select>
+            </div>
+            <p class="range" id="floorRange"></p>
+          </div>
+          <div>
+            <label for="build_year">건축년도</label>
+            <div class="input-unit">
+              <select id="build_year"></select>
+            </div>
+            <p class="range" id="buildRange">이 동에 실제로 있는 건축년도만 표시</p>
+          </div>
+        </div>
+
+        <label>계약연도</label>
+        <div class="segment" id="yearSegment">
+          <button type="button" data-year="2024">2024</button>
+          <button type="button" data-year="2025">2025</button>
+          <button type="button" data-year="2026" class="active">2026</button>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">예측하기</button>
+      </form>
+    </section>
+
+    <!-- 결과 -->
+    <section class="panel result-panel">
+      <h2 class="panel-title"><span class="step">2</span>예측 결과</h2>
+
+      <div id="emptyState" class="empty">
+        <div class="empty-icon">🏢</div>
+        <p>왼쪽에 아파트 정보를 입력하고<br><b>예측하기</b>를 눌러주세요.</p>
+      </div>
+
+      <div id="resultBox" class="hidden">
+        <p class="warn hidden" id="warnMsg"></p>
+        <p class="summary" id="summary"></p>
+        <p class="price" id="price"></p>
+        <p class="price-sub" id="priceSub"></p>
+
+        <div class="unit-prices">
+          <div><span>㎡당</span><b id="perM2"></b></div>
+          <div><span>평당</span><b id="perPyeong"></b></div>
+        </div>
+
+        <!-- 모델 성능 -->
+        <div class="metric">
+          <div class="gauge" id="gauge"><span id="r2Text"></span></div>
+          <div class="metric-info">
+            <p class="metric-name">모델 성능 · 결정계수 R² <small>(테스트 세트)</small></p>
+            <p class="metric-desc" id="r2Desc"></p>
+            <ul class="metric-list">
+              <li>교차검증 R² (5-Fold) <b id="cvR2"></b></li>
+              <li>최적 파라미터 <b id="params"></b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p id="errorMsg" class="error hidden"></p>
+
+      <!-- 최근 예측 기록 -->
+      <div class="history hidden" id="historyBox">
+        <h3>최근 예측 기록</h3>
+        <ul id="historyList"></ul>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

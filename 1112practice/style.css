@@ -1,0 +1,143 @@
+/* ===== 색상 ===== */
+:root {
+  --navy: #14213d;
+  --blue: #2e6bf0;
+  --blue-soft: #eaf1ff;
+  --green: #16a36a;
+  --text: #1c2536;
+  --muted: #6b778c;
+  --line: #e3e8f0;
+  --bg: #f2f4f8;
+  --card: #ffffff;
+  --red: #d64545;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ===== 상단 ===== */
+.top { background: var(--navy); color: #fff; padding: 28px 16px 70px; }
+.top-inner { max-width: 960px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand-mark {
+  background: var(--blue); font-weight: 900; font-size: 15px; letter-spacing: 1px;
+  width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0;
+}
+.brand h1 { font-size: 24px; font-weight: 900; }
+.brand p { font-size: 13px; color: #aeb9d0; margin-top: 4px; }
+
+/* ===== 레이아웃 ===== */
+.layout {
+  max-width: 992px; margin: -46px auto 40px; padding: 0 16px;
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; align-items: start;
+}
+.panel {
+  background: var(--card); border-radius: 16px; padding: 26px;
+  box-shadow: 0 6px 24px rgba(20, 33, 61, .08);
+}
+.panel-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.step {
+  background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 900;
+  width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+}
+
+/* ===== 폼 ===== */
+label { display: block; font-size: 13px; font-weight: 700; color: #45526a; margin: 18px 0 7px; }
+.hint { font-weight: 500; color: var(--blue); margin-left: 6px; }
+select, input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--text);
+  padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fafbfd;
+}
+select:focus, input:focus { outline: none; border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px var(--blue-soft); }
+.input-unit { position: relative; }
+.input-unit input { padding-right: 40px; }
+.input-unit span { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.chips { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.chip {
+  font: inherit; font-size: 12px; padding: 6px 10px; border-radius: 20px; cursor: pointer;
+  border: 1px solid var(--line); background: #fff; color: var(--muted);
+}
+.chip.active, .chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+
+.segment { display: grid; grid-template-columns: repeat(3, 1fr); background: #eef1f6; border-radius: 10px; padding: 4px; }
+.segment button {
+  font: inherit; font-size: 14px; font-weight: 700; padding: 9px 0; border: 0; border-radius: 8px;
+  background: transparent; color: var(--muted); cursor: pointer;
+}
+.segment button.active { background: #fff; color: var(--blue); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+.submit {
+  width: 100%; margin-top: 26px; padding: 14px; border: 0; border-radius: 10px;
+  background: var(--blue); color: #fff; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.submit:hover { background: #2357c9; }
+.submit:disabled { background: #9db6ec; cursor: wait; }
+
+/* ===== 결과 ===== */
+.empty { text-align: center; color: var(--muted); padding: 60px 0; line-height: 1.7; }
+.empty-icon { font-size: 44px; margin-bottom: 10px; }
+.hidden { display: none !important; }
+
+.summary { font-size: 14px; color: var(--muted); margin-top: 14px; }
+.price { font-size: 40px; font-weight: 900; color: var(--blue); margin: 6px 0 2px; letter-spacing: -1px; }
+.price-sub { font-size: 13px; color: var(--muted); }
+
+.unit-prices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.unit-prices div { background: #f6f8fb; border-radius: 10px; padding: 12px 14px; }
+.unit-prices span { display: block; font-size: 12px; color: var(--muted); }
+.unit-prices b { font-size: 17px; }
+
+.metric { display: flex; gap: 18px; align-items: center; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+.gauge {
+  --p: 0;
+  width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
+  background: conic-gradient(var(--green) calc(var(--p) * 1%), #e7ecf3 0);
+  transition: --p .8s;
+}
+.gauge span {
+  width: 74px; height: 74px; border-radius: 50%; background: #fff; display: grid; place-items: center;
+  font-size: 20px; font-weight: 900; color: var(--green);
+}
+.metric-name { font-size: 14px; font-weight: 700; }
+.metric-name small { font-weight: 400; color: var(--muted); }
+.metric-desc { font-size: 13px; color: var(--muted); margin: 4px 0 8px; }
+.metric-list { list-style: none; font-size: 12px; color: var(--muted); }
+.metric-list li { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.metric-list b { color: var(--text); font-weight: 500; }
+
+.error { color: var(--red); font-size: 14px; background: #fdf0f0; padding: 12px 14px; border-radius: 10px; margin-top: 14px; }
+
+/* ===== 기록 ===== */
+.history { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.history h3 { font-size: 13px; color: #45526a; margin-bottom: 8px; }
+.history li {
+  list-style: none; display: flex; justify-content: space-between; gap: 10px;
+  font-size: 13px; padding: 8px 0; border-bottom: 1px dashed var(--line);
+}
+.history li span { color: var(--muted); }
+.history li b { white-space: nowrap; }
+
+/* ===== 모바일 ===== */
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; }
+  .brand h1 { font-size: 20px; }
+  .price { font-size: 32px; }
+}
+
+/* ===== 동별 데이터 범위 안내 / 경고 ===== */
+.range { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+.range.out { color: var(--red); font-weight: 700; }
+input.out { border-color: var(--red); background: #fdf3f3; }
+.warn {
+  margin-top: 14px; font-size: 13px; line-height: 1.5; color: #9a5b00;
+  background: #fff6e5; border: 1px solid #ffe0a6; padding: 10px 12px; border-radius: 10px;
+}

@@ -63,7 +63,7 @@ param_grid = {
 
 # 3. k-fold 교차 검증
 # KFold(n_splits=k개의 동일한 폴드로 분할 , shuffle=분할시 무작위 섞기 , random_state = 42)
-kf = KFold( n_splits = 5 , shuffle = True , random_state = 42 )
+
 # 학습 데이터들을 5개로 나누어 4개 학습하고 1개로 검증 하는 과정을 5번 교차 검증 = 평균 오차
 
 # 4. 그리드서치CV : 교차검증 과 다양한 파라미터의 자동으로 실행하고 최적 성능 찾기
