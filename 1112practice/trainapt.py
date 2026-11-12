@@ -47,14 +47,14 @@ grid.fit( X_train , Y_train )
 # 최적 모델 및 파라미터 확인
 best_model = grid.best_estimator_
 print( grid.best_params_ )
-print( '교차검증 평균 r2:' , grid.best_score_ ) # 교차검증 평균 r2
+print( grid.best_score_ )
 
 # 결정계수 r2
 from sklearn.metrics import r2_score
 Y_pred = best_model.predict( X_test )
 test_r2 = r2_score( Y_test , Y_pred )
-print( '훈련 r2:' , best_model.score( X_train , Y_train ) ) # 훈련 r2
-print( '테스트 r2:' , test_r2 ) # 테스트 r2
+print( '훈련 r2:' , best_model.score( X_train , Y_train ) )
+print( '테스트 r2:' , test_r2 )
 
 # 서빙
 joblib.dump( best_model , './1112practice/apt_model.pkl' )
@@ -67,6 +67,8 @@ metrics = {
 joblib.dump( metrics , './1112practice/apt_metrics.pkl' )
 
 model = joblib.load( './1112practice/apt_model.pkl' )
+
+# 여의도동 105.72㎡, 2층, 1975년식
 sample = pd.DataFrame( { 'dong' : ['여의도동'] , 'area' : [105.72] , 
                         'floor' : [2] , 'build_year' : [1975] ,
                         'contract_year' : [2026] 
