@@ -15,25 +15,55 @@
 # Y = df['diagnosis']
 # X = df.drop(columns=['diagnosis'])
 
+import pandas as pd
+df = pd.read_csv( './20261110_day15/data.csv' )
+df = df.drop( columns=['id'] )              # 식별자 열 제외
+df = df.dropna( axis=1 , how='all' )        # 모든 값이 NaN인 열(Unnamed: 32) 제외
+Y = ( df['diagnosis'] == 'M' ).astype( int ) # 악성(M) -> 1 , 양성(B) -> 0
+X = df.drop( columns=['diagnosis'] )         # 30개 수치형 특성
+print( X.shape )
+
 # [단계 2] 훈련용 / 테스트용 데이터 분리
 # train_test_split을 사용하여 8:2 비율(test_size=0.2)로 분리하고,
 # 재현성을 위해 random_state=42, 클래스 비율 유지를 위해 stratify=y로 설정하세요.
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size=0.2, random_state=42, stratify=Y )
 #
 # [단계 3] 데이터 표준화 (Standardization)
 # StandardScaler를 활용하여 훈련 데이터(X_train) 기준으로 스케일러를 학습(fit)시키고,
 # X_train과 X_test를 각각 표준화(transform) 변환하세요.
+from sklearn.preprocessing import StandardScaler
+ss = StandardScaler()
+ss.fit( X_train )
+X_train_scaled = ss.transform( X_train )
+X_test_scaled = ss.transform( X_test )
 #
 # [단계 4] 로지스틱 회귀 모델 학습 (Logistic Regression)
 # LogisticRegression(random_state=42) 모델을 생성하고 훈련 세트(X_train_scaled, y_train)로 학습시키세요.
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression( random_state=42 )
+model.fit( X_train_scaled , Y_train )
 #
 # [단계 5] 모델 평가 및 분류 정확도(Accuracy) 확인
 # 테스트 세트에 대한 예측을 수행하고 정확도(accuracy_score)를 출력하세요.
 # 추가로 confusion_matrix 또는 classification_report를 통해 분류 성능을 점검하세요.
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+Y_pred = model.predict( X_test_scaled )
+print( '정확도:' , accuracy_score( Y_test , Y_pred ) )
+print( confusion_matrix( Y_test , Y_pred ) ) # [[양성 맞힘, 양성을 악성으로] , [악성을 양성으로, 악성 맞힘]]
+print( classification_report( Y_test , Y_pred ) )
 #
 # [단계 6] 학습한 모델의 클래스 및 계수(Weights) 확인
 # 모델이 학습한 클래스 종류(classes_)와 절편(intercept_), 주요 피처 계수(coef_) 형태를 출력하세요.
+print( model.classes_ )       # [0 1]
+print( model.intercept_ )     # 절편
+print( model.coef_.shape )    # (1, 30) : 특성 30개에 대한 계수
+print( model.coef_ )
 #
 # [단계 7] 샘플 데이터 예측 및 예측 확률 확인
 # 테스트 세트의 앞선 3개 샘플 데이터에 대해:
 # 1. 모델이 예측한 클래스(0 또는 1)를 출력하세요.
 # 2. 각 샘플별 양성(0)/악성(1) 클래스에 대한 예측 확률(predict_proba)을 출력하세요.
+print( model.predict( X_test_scaled[ : 3 ] ) )                     # 예측 클래스 (0:양성 / 1:악성)
+import numpy as np
+print( np.round( model.predict_proba( X_test_scaled[ : 3 ] ) , 3 ) ) # [양성(0) 확률 , 악성(1) 확률]
