@@ -3,7 +3,7 @@ url = "https://raw.githubusercontent.com/bab2min/corpus/master/sentiment/naver_s
 df = pd.read_table(url, names=['rating', 'review'])
 df = df[df['rating'] != 3]
 df['label'] = (df['rating'] >= 4).astype(int)
-df_sample = df.sample(n=10000, random_state=42).reset_index(drop=True)
+df_sample = df.sample(n=5000, random_state=42).reset_index(drop=True)
 
 print( df_sample.shape ) # ( 5000 , 3 )
 
@@ -12,7 +12,7 @@ import re # 정규표현식 함수
 cleaned_list = [ ] # 정규현식 통과한 목록
 for text in df_sample[ 'review' ] : # 리뷰 들을 반복
     # re.sub( r'[표현식]' , '치환문자' , str() )
-    text = re.sub( r'[ ^가=힣a-zA-Z0-9\s ]' , ' ' , str( text ) )
+    text = re.sub( r'[^가-힣a-zA-Z0-9\s]',' ', str(text) )
     # .join( 리스트 ) : 각 리스트 항목 사이에 특정 문자 연결
     # .split( ) : 하나의 문자열 내 특정문자로 분리하여 리스트 반환
     cleaned_text = ' '.join( text.split( ) ) # '대한 민국' -> [ '대한' , '민국' ]
