@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 url = "https://raw.githubusercontent.com/bab2min/corpus/master/sentiment/naver_shopping.txt"
 df = pd.read_table(url, names=['rating', 'review'])
 df = df[df['rating'] != 3]
@@ -57,3 +58,65 @@ print( test_word )
 print( tokenize_kiwi( test_word ) )  
 # 마감이 안좋아요...실밥도 많고 바느질도 부족한 부분이 몇군데 있네요...교환받기 귀찮아서 그냥 씁니다
 # ['마감', '실밥', '바느질', '부족', '부분', '교환', '귀찮다']
+
+X_train,X_test,Y_train,Y_test=train_test_split(
+    df_sample[ 'cleaned_review' ],df_sample[ 'label' ],
+    random_state=42, stratify=df_sample['label'] )
+
+# 7. 리뷰 --> 행렬(벡터) 변환 
+from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf = TfidfVectorizer( 
+    tokenizer = tokenize_kiwi , # 생략 시 공백/띄어쓰기 기준으로 분리 # 직접 만든 함수
+    token_pattern=None 
+)
+X_train_tfidf = tfidf.fit_transform( X_train ) # 학습 -> 변환 # 학습용
+X_test_tfidf = tfidf.transform( X_test ) # 테스트용
+print( X_train_tfidf.shape )
+print( X_test_tfidf.shape )
+
+# ( 문제점 ) 오타 등 유사한 단어들을 분별 불가능 해서 다른 단어로 취급
+# ( 해결 ) 유사도 거리 계산 ( 임베딩 / BERT )
+
+# 8. 긍정 / 부정 : 감성분석
+from sklearn.linear_model import LogisticRegression # 실무적으로 LightGBM
+model = LogisticRegression( C=1.0 , max_iter=1000 , random_state=42 )
+model.fit( X_train_tfidf , Y_train ) # 분류 모델 학습
+print( model.score( X_train_tfidf , Y_train ) )
+print( model.score( X_test_tfidf , Y_test ) )
+Y_pred = model.predict( X_test_tfidf )
+from sklearn.metrics import f1_score
+print( 'f1 : ' , f1_score( Y_test , Y_pred ) )
+print( X_train_tfidf.toarray()[0] )
+
+# 9. 예측하기 
+new_reviews = [
+    "배송도 정말 빠르고 가성비 최고입니다! 재구매 의사 있어요.",
+    "마감 상태가 엉망이고 실밥이 다 터져서 왔네요. 최악입니다.",
+    "그냥 가격만큼 하는 것 같아요. 특별히 좋지도 나쁘지도 않음."
+]
+# 정규표현식
+cleaned_new = [ ] 
+for text in new_reviews : 
+    text = re.sub( r'[^가-힣a-zA-Z0-9\s]', ' ', str(next) )
+    cleaned_new.append( ' '.join(text.split() ) )
+# 정규표현식 이후 토큰나이즈
+new_tfidf = tfidf.transform( cleaned_new )
+# 토큰나이즈 이후 모델추론
+probs = model.predict_proba( new_tfidf ) # predict 추론 # predict_proba 추론 확률
+# 0.6 이상이면 긍정 , 0.6 이하이면 부정 그외 중립
+for i in range( len(new_reviews) ) : # 리뷰 수 만큼 반복
+    pos = probs[i][1]
+    if pos >= 0.6 : 
+        contents = '긍정'
+    elif pos <= 0.4 : 
+        contents = '부정'
+    else : 
+        contents = '중립'
+    print( f'리뷰: , {new_reviews[i]}' )
+    print( f'감성분석: , {contents} , 긍정확률:{ pos } , 부정확률:{ probs[i][0] } ')
+# 리뷰: , 배송도 정말 빠르고 가성비 최고입니다! 재구매 의사 있어요.
+# 감성분석: , 중립 , 긍정확률:0.4302930471649006 , 부정확률:0.5697069528350994 
+# 리뷰: , 마감 상태가 엉망이고 실밥이 다 터져서 왔네요. 최악입니다.
+# 감성분석: , 중립 , 긍정확률:0.4302930471649006 , 부정확률:0.5697069528350994 
+# 리뷰: , 그냥 가격만큼 하는 것 같아요. 특별히 좋지도 나쁘지도 않음.
+# 감성분석: , 중립 , 긍정확률:0.4302930471649006 , 부정확률:0.5697069528350994 
